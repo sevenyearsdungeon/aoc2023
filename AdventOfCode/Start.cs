@@ -20,8 +20,17 @@ namespace AdventOfCode
             Console.WriteLine("Day 3, Part 1: " + new Day3().SolvePart1());
             Console.WriteLine("Day 3, Part 2: " + new Day3().SolvePart2());
 
+            Console.WriteLine("Day 7, Part 1: " + new Day07().SolvePart1());
+            Console.WriteLine("Day 7, Part 2: " + new Day07().SolvePart2());
+
+            Console.WriteLine("Day 12, Part 1: " + new Day12().SolvePart1());
+            Console.WriteLine("Day 12, Part 2: " + new Day12().SolvePart2());
+
             Console.WriteLine("Day 13, Part 1: " + new Day13().SolvePart1());
             Console.WriteLine("Day 13, Part 2: " + new Day13().SolvePart2());
+
+            Console.WriteLine("Day 14, Part 1: " + new Day14().SolvePart1());
+            Console.WriteLine("Day 14, Part 2: " + new Day14().SolvePart2());
 
             Console.ReadKey();
         }
