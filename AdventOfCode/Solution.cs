@@ -10,5 +10,6 @@ namespace AdventOfCode
     {
         public abstract string SolvePart1();
         public abstract string SolvePart2();
+
     }
 }
