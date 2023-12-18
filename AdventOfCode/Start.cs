@@ -11,6 +11,7 @@ namespace AdventOfCode
     {
         public static void Main(string[] args)
         {
+
             Console.WriteLine("Day 1, Part 1: " + new Day1().SolvePart1());
             Console.WriteLine("Day 1, Part 2: " + new Day1().SolvePart2());
 
@@ -36,6 +37,9 @@ namespace AdventOfCode
             Console.WriteLine("Day 10, Part 1: " + new Day10().SolvePart1());
             Console.WriteLine("Day 10, Part 2: " + new Day10().SolvePart2());
 
+            Console.WriteLine("Day 11, Part 1: " + new Day11().SolvePart1());
+            Console.WriteLine("Day 11, Part 2: " + new Day11().SolvePart2());
+
             Console.WriteLine("Day 12, Part 1: " + new Day12().SolvePart1());
             Console.WriteLine("Day 12, Part 2: " + new Day12().SolvePart2());
 
@@ -44,6 +48,9 @@ namespace AdventOfCode
 
             Console.WriteLine("Day 14, Part 1: " + new Day14().SolvePart1());
             Console.WriteLine("Day 14, Part 2: " + new Day14().SolvePart2());
+
+            Console.WriteLine("Day 18, Part 1: " + new Day18().SolvePart1());
+            Console.WriteLine("Day 18, Part 2: " + new Day18().SolvePart2());
 
             Console.ReadKey();
         }

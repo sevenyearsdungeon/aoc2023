@@ -12,8 +12,8 @@ internal class Day10 : Solution
     static Day10()
     {
         lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\{nameof(Day10)}\\{nameof(Day10)}.txt")).ToList();
-         mazeWidth = lines[0].Length;
-         mazeHeight = lines.Count;
+        mazeWidth = lines[0].Length;
+        mazeHeight = lines.Count;
         maze = new Pipe[mazeWidth, mazeHeight];
         for (int y = 0; y < mazeHeight; y++)
             for (int x = 0; x < mazeWidth; x++)
