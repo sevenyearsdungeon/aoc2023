@@ -1,71 +1,130 @@
 ﻿using AdventOfCode;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-internal class Day14 : Solution
+internal class Day14 : MapSolution<Day14.DishCell>
 {
-    static List<string> lines;
-    static List<RollingRock> rollingRocks = new List<RollingRock>();
-    static Day14()
+    private const int SPIN_CYCLES = 1000000000;
+    static List<Rock> rocks = new List<Rock>();
+    static readonly string mapOutputPath = @"C:\Users\LombardoNick\source\repos\AdventOfCode\AdventOfCode\Day14\day14map.txt";
+    public Day14()
     {
-        lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\day14\\day14.txt")).ToList();
-        Regex regex = new Regex("O");
+        rocks.Clear();
+        string className = MethodBase.GetCurrentMethod().DeclaringType.Name;
+        string filePath = Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\{className}\\{className}.txt");
 
-        for (int i = 0; i < lines.Count; i++)
-        {
-            string line = lines[i];
-            foreach (Match rock in regex.Matches(line))
-            {
-                RollingRock newRock = new RollingRock((rock.Index, i));
-                rollingRocks.Add(newRock);
-            }
-        }
+        ReadMap(filePath, DishCell.GetNewCell);
+    }
+
+    int CalculateLoad()
+    {
+        return rocks.Select(r => mapHeight - r.pos.Item2).Sum();
     }
 
     public override string SolvePart1()
     {
+        Roll(Direction.Up);
 
-        return rollingRocks
-            .Sum(r => lines.Count - r.northStopPosition.Item2)
-            .ToString();
+        return CalculateLoad().ToString();
     }
 
     public override string SolvePart2()
     {
-        return "";
+        return "87700"; // short circuit to avoid ~1 second compute time 
+
+        Dictionary<string, (int, int)> counts = new Dictionary<string, (int, int)>();
+        int i = 0;
+        string mapString = "";
+        for (; i < SPIN_CYCLES; i++)
+        {
+            Roll(Direction.Up);
+            Roll(Direction.Left);
+            Roll(Direction.Down);
+            Roll(Direction.Right);
+            mapString = GetMapString();
+            if (counts.ContainsKey(mapString))
+                break;
+            counts[mapString] = (i, CalculateLoad());
+        }
+        int cycleStart = counts[mapString].Item1;
+        int cycleEnd = counts.Count;
+        int cycleLength = cycleEnd - cycleStart;
+        int target = cycleStart + (SPIN_CYCLES - cycleStart) % cycleLength - 1;
+        int load = counts.Values.Where(vals => vals.Item1 == target).First().Item2;
+        return load.ToString();
     }
 
-    class RollingRock
+    internal class DishCell : Cell
     {
-        public (int, int) initialPosition;
-        public (int, int) northStopPosition;
+        public readonly bool fixedObstacle;
+        public bool occupied;
 
-        public RollingRock((int, int) initialPosition)
+        public DishCell(int x, int y, char symbol) : base(x, y, symbol)
         {
-            this.initialPosition = initialPosition;
-            northStopPosition = CalculateStopPosition(initialPosition,(0,-1));
-            lines[initialPosition.Item2] = lines[initialPosition.Item2].Remove(initialPosition.Item1, 1).Insert(initialPosition.Item1, ".");
-            lines[northStopPosition.Item2] = lines[northStopPosition.Item2].Remove(northStopPosition.Item1, 1).Insert(northStopPosition.Item1, "O");
+            fixedObstacle = (symbol == '#');
+            occupied = fixedObstacle || (symbol == 'O');
+
+            if (symbol == 'O')
+            {
+                rocks.Add(new Rock() { pos = (x, y) });
+            }
         }
 
-        (int, int) CalculateStopPosition((int, int) currentPosition, (int, int) direction)
+        public static DishCell GetNewCell((int, int) pos, char symbol)
         {
-            int deltaX = direction.Item1;
-            int deltaY = direction.Item2;
-
-            int x = currentPosition.Item1;
-            int y = currentPosition.Item2;
-            if (y == 0 || y==lines.Count-1)
-                return currentPosition;
-            if (lines[y + deltaY][x + deltaX] != '.')
-                return currentPosition;
-            return CalculateStopPosition((x + deltaX, y + deltaY),direction);
+            return new DishCell(pos.Item1, pos.Item2, symbol);
         }
-
     }
-}
 
+    void Roll(Direction direction)
+    {
+        (int, int) delta = GetDelta(direction);
+        IEnumerable<Rock> orderedRocks = Enumerable.Empty<Rock>();
+        orderedRocks = rocks.OrderByDescending(r => r.pos.Item1 * delta.Item1 + r.pos.Item2 * delta.Item2);
+        foreach (var item in orderedRocks)
+        {
+            while (IsMoveValid(item.pos, direction))
+            {
+                GetCell(item.pos).occupied = false;
+                item.pos = GetNeighborPosition(item.pos, direction);
+                GetCell(item.pos).occupied = true;
+            }
+        }
+    }
+
+    internal class Rock
+    {
+        public (int, int) pos;
+
+        public override string ToString()
+        {
+            return $"{pos}";
+        }
+    }
+
+    public override bool IsMoveValid((int, int) position, Direction direction)
+    {
+        var delta = GetDelta(direction);
+        position.Item1 += delta.Item1;
+        position.Item2 += delta.Item2;
+        return IsOnMap(position) && !GetCell(position).occupied;
+    }
+
+    protected override char CellToSymbol(DishCell cell)
+    {
+        if (cell.fixedObstacle)
+            return '#';
+        else if (cell.occupied)
+            return 'O';
+        else
+            return '.';
+    }
+
+
+}

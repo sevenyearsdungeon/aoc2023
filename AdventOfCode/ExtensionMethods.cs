@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// why is this not a default feature in LINQ?
 /// </summary>
-internal static class ForEachExtension
+internal static class ExtensionMethods
 {
     public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
     {
@@ -17,4 +17,4 @@ internal static class ForEachExtension
         }
     }
 }
-
+  

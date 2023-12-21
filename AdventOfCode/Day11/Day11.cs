@@ -4,8 +4,8 @@ using System.Reflection;
 internal class Day11 : Solution
 {
     static List<string> lines;
-    static Cell[,] map;
-    static List<Cell> galaxies = new List<Cell>();
+    static WeightedCell[,] map;
+    static List<WeightedCell> galaxies = new List<WeightedCell>();
 
     static int startX, startY, mapWidth, mapHeight;
     static Day11()
@@ -13,12 +13,12 @@ internal class Day11 : Solution
         string className = MethodBase.GetCurrentMethod().DeclaringType.Name;
         lines = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\{className}\\{className}.txt")).ToList(); mapWidth = lines[0].Length;
         mapHeight = lines.Count;
-        map = new Cell[mapWidth, mapHeight];
+        map = new WeightedCell[mapWidth, mapHeight];
         for (int y = 0; y < mapHeight; y++)
             for (int x = 0; x < mapWidth; x++)
             {
                 char symbol = lines[mapHeight - y - 1][x];
-                Cell newCell = new Cell(x, y, symbol);
+                WeightedCell newCell = new WeightedCell(x, y, symbol);
                 map[x, y] = newCell;
                 if (symbol == '#')
                 {
@@ -71,22 +71,12 @@ internal class Day11 : Solution
     }
 
 
-    class Cell
+    class WeightedCell : Cell
     {
         public int weight = 1;
-        public int x, y;
-        public char symbol;
 
-        public Cell(int x, int y, char symbol)
+        public WeightedCell(int x, int y, char symbol) : base(x, y, symbol)
         {
-            this.x = x;
-            this.y = y;
-            this.symbol = symbol;
-        }
-
-        public override string ToString()
-        {
-            return $"{symbol} ({x}, {y})";
         }
     }
 
