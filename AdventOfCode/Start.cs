@@ -64,7 +64,6 @@ namespace AdventOfCode
             Console.WriteLine("Day 21, Part 1: " + new Day21().SolvePart1());
             Console.WriteLine("Day 21, Part 2: " + new Day21().SolvePart2());
 
-            Console.ReadKey();
         }
     }
 }

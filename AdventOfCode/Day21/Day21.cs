@@ -15,10 +15,12 @@ internal class Day21 : MapSolution<Day21.GardenCell>
     List<(int, int)> calculationBuffer = new List<(int, int)>();
     (int, int) startPosition;
     string inputFilePath;
+    int mapTileSize;
     public Day21()
     {
         string className = MethodBase.GetCurrentMethod().DeclaringType.Name;
         inputFilePath = Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\{className}\\{className}.txt");
+        mapTileSize = File.ReadAllLines(inputFilePath)[0].Length;
     }
 
 
@@ -36,42 +38,52 @@ internal class Day21 : MapSolution<Day21.GardenCell>
 
     public override string SolvePart2()
     {
-        
-
-        return "";
+       // GetOffsetsData();
+        List<Sequence> sequences = new List<Sequence>();
+        foreach (var line in File.ReadLines(outputFilePath))
+        {
+            var sequence = new Sequence(line.Split(':')[1]);
+            sequences.Add(sequence);
+        }
+        int targetStep = 26501365;
+        int iterations = (targetStep+ 1 - 8 * mapTileSize) / mapTileSize;
+        for (int i = 0; i < iterations; i++)
+        {
+                sequences[(targetStep- 1) % mapTileSize].ExtrapolateNextValue();
+        }
+        // 82
+        return sequences[(targetStep - 1) % mapTileSize].ExtrapolateNextValue().ToString();
     }
 
     private void GetOffsetsData()
     {
-        ReadMapPadded(inputFilePath, GardenCell.GetNewCell, 11, 'S');
+        ReadMapPadded(inputFilePath, GardenCell.GetNewCell, 15, 'S');
         File.WriteAllText(outputFilePath, GetMapString());
         FindCellBySymbol('S', out startPosition);
         reachablePositions.Add(startPosition);
         List<Deltas> diffs = new List<Deltas>();
-        int iRepeat = 131;
+        int iRepeat = mapTileSize;
         List<int>[] offsets = new List<int>[iRepeat];
 
         int lastDelta = 0;
         int lastReachable = 1;
-        for (int i = 0; i < iRepeat * 6; i++)
+        for (int i = 0; i < iRepeat * 8; i++)
         {
             PropagateReachablePositions();
             var reachable = CountReachablePlots();
             int delta = reachable - lastReachable;
             int delta2 = lastDelta - delta;
             diffs.Add(new Deltas() { i = i, reachable = reachable, delta = delta, delta2 = delta2 });
-            if (i > iRepeat)
+            if (i >= 4 * iRepeat)
             {
                 int idx = i % iRepeat;
                 if (offsets[idx] == null)
                     offsets[idx] = new List<int>();
-                offsets[idx].Add(delta2);
+                offsets[idx].Add(reachable);
             }
-            Console.WriteLine($"{diffs.Last()}");
+            //Console.WriteLine($"{diffs.Last()}");
             lastDelta = delta;
             lastReachable = reachable;
-            if (!flag && i > 2 * iRepeat && i % iRepeat == 0)
-                WriteOffsets(offsets);
             //File.WriteAllText(mapOutPath, GetMapString());
             // 330
         }  // 461
@@ -81,7 +93,7 @@ internal class Day21 : MapSolution<Day21.GardenCell>
     void WriteOffsets(List<int>[] offsets)
     {
         int i = 0;
-        File.WriteAllLines(outputFilePath, offsets.Select(o => $"{i++:d3}: " + string.Join(",", o)));
+        File.WriteAllLines(outputFilePath, offsets.Select(o => $"{i++:d3}: " + string.Join(" ", o)));
     }
 
     class Deltas
