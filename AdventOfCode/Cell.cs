@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 class Cell
 {
-    public bool isObstacle = false;
+    public bool isStaticObstacle = false;
     public int x, y;
     public char symbol;
     public (int,int) pos => (x,y);

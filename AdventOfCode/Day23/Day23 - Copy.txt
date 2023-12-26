@@ -1,0 +1,24 @@
+ o                     
+ AAAAAAA         NNN   
+       A         N N   
+   AAAAA EEANN   N N   
+   A     E L N   N N   
+   BEEEE E L NNNNN NNN 
+   C   E E L         N 
+   CCC E E LLLLLLL NNN 
+     C E E       L N   
+ CCCCC E E LLLLLLL NNN 
+ C     E E L         N 
+ C CCC EEE LLL   SSSSC 
+ C C C       L   S   T 
+ CCC DII IIIIESS S   T 
+     G I I   P S S   T 
+ GGGGG III PPP S S TTT 
+ G         P   S S T   
+ GGG   GGG PPP SSS T   
+   G   G G   P     T   
+ GGG GGG G GGFQQ QQG   
+ G   G   G G   Q Q U   
+ GGGGG   GGG   QQQ UUU 
+                     o 
+

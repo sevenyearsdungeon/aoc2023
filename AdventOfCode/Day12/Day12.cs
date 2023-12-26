@@ -1,12 +1,18 @@
 ﻿using AdventOfCode;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 internal class Day12 : Solution
 {
+    static string className = MethodBase.GetCurrentMethod().DeclaringType.Name;
+    static string fileName = Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\{className}\\{className}.txt");
+    static string fileName2 = Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\{className}\\{className}Part2.txt");
+
     static List<Puzzle> puzzles = new List<Puzzle>();
     static Day12()
     {
@@ -23,29 +29,41 @@ internal class Day12 : Solution
     public override string SolvePart2()
     {
         return "";
+        GeneratePart2Input();
         puzzles.Clear();
-        Queue<string> lines = new Queue<string>(File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, $"..\\..\\..\\day12\\day12.txt")).ToList());
-            StringBuilder builder = new StringBuilder();
+        Queue<string> lines = new Queue<string>(File.ReadAllLines(fileName2));
         while (lines.Count > 0)
-        {
-            builder.Clear();
-            var line = lines.Dequeue();
-            var parts = line.Split(' ');
-            for (int i = 0; i < 5; i++)
-            {
-                builder.Append(parts[0]);
-            }
-            builder.Append(" ");
-            for (int i = 0; i < 5; i++)
-            {
-                builder.Append(parts[1]);
-                if (i < 4)
-                    builder.Append(",");
-            }
-            puzzles.Add(new Puzzle(builder.ToString()));
-        }
+            Debug.WriteLine(lines.Dequeue().Where(s=>s=='?').Count());
 
         return puzzles.Select(p => p.solutions.Count).Sum().ToString();
+    }
+
+    private static void GeneratePart2Input()
+    {
+        string[] lines = File.ReadAllLines(fileName);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < lines.Length; i++)
+        {
+            builder.Clear();
+            var line = lines[i];
+            var parts = line.Split(' ');
+            for (int repeat = 0; repeat < 5; repeat++)
+            {
+                builder.Append(parts[0]);
+                if (repeat < 4)
+                    builder.Append("?");
+            }
+            builder.Append(" ");
+            for (int repeat = 0; repeat < 5; repeat++)
+            {
+                builder.Append(parts[1]);
+                if (repeat < 4)
+                    builder.Append(",");
+            }
+            lines[i] = builder.ToString();
+            //puzzles.Add(new Puzzle(builder.ToString()));
+        }
+        File.WriteAllLines(fileName2, lines);
     }
 
     public class Puzzle

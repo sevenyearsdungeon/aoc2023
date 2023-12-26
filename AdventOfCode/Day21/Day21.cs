@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -81,7 +82,7 @@ internal class Day21 : MapSolution<Day21.GardenCell>
                     offsets[idx] = new List<int>();
                 offsets[idx].Add(reachable);
             }
-            //Console.WriteLine($"{diffs.Last()}");
+            //Debug.WriteLine($"{diffs.Last()}");
             lastDelta = delta;
             lastReachable = reachable;
             //File.WriteAllText(mapOutPath, GetMapString());
@@ -128,7 +129,7 @@ internal class Day21 : MapSolution<Day21.GardenCell>
                     if (!flag && !IsOnMap((startPos.Item1 + delta.Item1, startPos.Item2 + delta.Item2)))
                     {
                         flag = true;
-                        Console.WriteLine("OOOOOOOOOOO SHIT!");
+                        Debug.WriteLine("OOOOOOOOOOO SHIT!");
                     }
                     return GetNeighborPosition(startPos, dir);
                 }).ToArray());
@@ -162,7 +163,7 @@ internal class Day21 : MapSolution<Day21.GardenCell>
 
         public GardenCell(int x, int y, char symbol) : base(x, y, symbol)
         {
-            isObstacle = symbol == '#';
+            isStaticObstacle = symbol == '#';
         }
 
         public static GardenCell GetNewCell((int, int) pos, char symbol)

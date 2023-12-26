@@ -1,5 +1,7 @@
 ﻿using AdventOfCode;
+using CommunityToolkit.HighPerformance;
 using System.Collections;
+using System.Data;
 using System.Text;
 
 internal abstract class MapSolution<T> : Solution where T : Cell
@@ -7,6 +9,8 @@ internal abstract class MapSolution<T> : Solution where T : Cell
     protected T[,]? map { get; private set; }
     protected int mapWidth { get; private set; }
     protected int mapHeight { get; private set; }
+    protected ReadOnlySpan2D<T> Span { get => map; }
+
     protected T GetCell((int, int) position) => map[position.Item1, position.Item2];
     protected bool IsOnMap((int, int) pos) => (pos.Item1 >= 0 && pos.Item2 >= 0 && pos.Item1 < mapWidth && pos.Item2 < mapHeight);
 
@@ -25,6 +29,11 @@ internal abstract class MapSolution<T> : Solution where T : Cell
             }
     }
 
+    protected int ManhattanDistance(T a, T b)
+    {
+        return Math.Abs(b.y - a.y) + Math.Abs(a.x - b.x);
+    }
+
 
     protected void ReadMapPadded(string path, Func<(int, int), char, T> cellProducer, int n, char skipChar)
     {
@@ -41,7 +50,7 @@ internal abstract class MapSolution<T> : Solution where T : Cell
         for (int y = 0; y < mapHeight; y++)
             for (int x = 0; x < mapWidth; x++)
             {
-                bool centerTile =x>centerTileXMin && x<centerTileXMax && y>centerTileYMin && y<centerTileYMax;
+                bool centerTile = x > centerTileXMin && x < centerTileXMax && y > centerTileYMin && y < centerTileYMax;
                 char symbol = lines[y % inputHeight][x % inputWidth];
                 if (centerTile)
                 {
@@ -65,13 +74,13 @@ internal abstract class MapSolution<T> : Solution where T : Cell
             }
     }
 
-    public static Direction[] directions =(Direction[]) Enum.GetValues(typeof(Direction));
+    public static Direction[] directions = (Direction[])Enum.GetValues(typeof(Direction));
     public enum Direction
     {
         Up = 0,       // ^
-        Down = 1,     // v
-        Left = 2,     // <
-        Right = 3,    // >
+        Right = 1,    // >
+        Down = 2,     // v
+        Left = 3,     // <
     }
 
     public static (int, int) GetDelta(Direction direction)
@@ -97,12 +106,52 @@ internal abstract class MapSolution<T> : Solution where T : Cell
         return newPosition;
     }
 
+    public T GetNeighborCell(T cell, Direction direction)
+    {
+        var delta = GetDelta(direction);
+        var newPosition = (cell.pos.Item1 + delta.Item1, cell.pos.Item2 + delta.Item2);
+
+        return GetCell(newPosition);
+    }
+
     public virtual bool IsMoveValid((int, int) position, Direction direction)
     {
         var delta = GetDelta(direction);
         position.Item1 += delta.Item1;
         position.Item2 += delta.Item2;
-        return IsOnMap(position) && !GetCell(position).isObstacle;
+        return IsOnMap(position) && !GetCell(position).isStaticObstacle;
+    }
+    public virtual bool IsMoveValid(T cell, Direction direction)
+    {
+        var delta = GetDelta(direction);
+        (int, int) position = (cell.pos.Item1 + delta.Item1, cell.pos.Item2 + delta.Item2);
+        return IsOnMap(position) && !GetCell(position).isStaticObstacle;
+    }
+    public virtual bool IsMoveValid(T cell, Direction direction, out T destinationCell)
+    {
+        destinationCell = null;
+        var delta = GetDelta(direction);
+        (int, int) position = (cell.pos.Item1 + delta.Item1, cell.pos.Item2 + delta.Item2);
+        if (IsOnMap(position))
+        {
+            destinationCell = GetCell(position);
+            return !destinationCell.isStaticObstacle;
+        }
+        return false;
+    }
+
+    public virtual bool IsMoveValid((int, int) position, Direction direction, out T destinationCell)
+    {
+        destinationCell = null;
+        var delta = GetDelta(direction);
+        position.Item1 += delta.Item1;
+        position.Item2 += delta.Item2;
+        if (IsOnMap(position))
+        {
+            destinationCell = GetCell(position);
+            return !destinationCell.isStaticObstacle;
+        }
+        return false;
     }
 
     protected string GetMapString()

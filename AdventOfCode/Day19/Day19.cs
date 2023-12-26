@@ -120,8 +120,8 @@ internal class Day19 : Solution
                 if (lastOperation.actionType == ActionType.Accept)
                 {
                     var passing = GetPassingCount(currentList);
-                    // Console.Write(string.Join(" --> ", currentList));
-                    // Console.WriteLine($" ==> {passing}");
+                    // Debug.Write(string.Join(" --> ", currentList));
+                    // Debug.WriteLine($" ==> {passing}");
                     accepted.Add( passing );
                 }
             }
@@ -165,7 +165,7 @@ internal class Day19 : Solution
         }
 
         part2Total = accepted.Sum();
-        //Console.WriteLine(accepted.Sum());
+        //Debug.WriteLine(accepted.Sum());
     }
     static long GetPassingCount(List<Operation> operations)
     {
@@ -220,7 +220,7 @@ internal class Day19 : Solution
             }
         }
 
-       // Console.Write($"[x({minX} - {maxX}), m({minM} - {maxM}), a({minA} - {maxA}), s({minS} - {maxS})]");
+       // Debug.Write($"[x({minX} - {maxX}), m({minM} - {maxM}), a({minA} - {maxA}), s({minS} - {maxS})]");
         return (maxX - minX + 1) * (maxM - minM + 1) * (maxA - minA + 1) * (maxS - minS + 1);
     }
 
